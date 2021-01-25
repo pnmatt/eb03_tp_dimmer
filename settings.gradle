@@ -1,0 +1,3 @@
+include ':tp-roundslider-release'
+include ':app'
+rootProject.name = "eb03_tp_dimmer"
