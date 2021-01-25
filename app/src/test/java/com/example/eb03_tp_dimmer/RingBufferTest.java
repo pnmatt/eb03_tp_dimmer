@@ -4,6 +4,9 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+/**
+ * Test du ByteRingBuffer
+ */
 public class RingBufferTest {
     @Test
     public void firstTest() {
