@@ -2,14 +2,25 @@ package com.example.eb03_tp_dimmer;
 
 import java.nio.BufferOverflowException;
 
+/**
+ * Classe de buffer circulaire.
+ */
 public class ByteRingBuffer {
+    /**Array des valeurs du buffer*/
     private byte[] buffer;
+    /**Taille totale maximale du buffer*/
     private int totSize;
+    /**Nombre de valeurs présentes dans le buffer*/
     private int nbVal;
+    /**Index de lecture*/
     private int readIndex;
+    /**Index d'écriture*/
     private int writeIndex;
 
-
+    /**
+     * Constructeur du buffer circulaire
+     * @param nbEl Nombre d'éléments maximum voulus
+     */
     public ByteRingBuffer(int nbEl){
         buffer = new byte[nbEl];
         totSize = nbEl;
@@ -17,6 +28,12 @@ public class ByteRingBuffer {
         writeIndex = -1;
     }
 
+    /**
+     * Fonction d'ajout de variable byte dans le buffer
+     * @throws BufferOverflowException Quand on arrive au bout du buffer
+     * @param in byte ajouté
+     * @return 0 si la variable a bien été ajoutée
+     */
     public int put(byte in){
         if(nbVal == totSize) {
             /*writeIndex = incIndex(writeIndex);
@@ -32,6 +49,11 @@ public class ByteRingBuffer {
         }
     }
 
+    /**
+     * Fonction d'ajout de tableau de variables
+     * @param in Tableau de bytes ajouté
+     * @return 0 si le tableau a bien été ajouté
+     */
     public int put(byte[] in){
         int replaced = 0;
         for(byte b : in){
@@ -40,6 +62,10 @@ public class ByteRingBuffer {
         return replaced;
     }
 
+    /**
+     * Fonction de récupération de variable
+     * @return Byte disponible le plus ancien
+     */
     public byte get(){
         if(nbVal > 0){
             byte toreturn = buffer[readIndex];
@@ -53,6 +79,10 @@ public class ByteRingBuffer {
         }
     }
 
+    /**
+     * Fonction permettant de vider le buffer
+     * @return Contenu total du buffer, tableau de bytes
+     */
     public byte[] getAll(){
         if(nbVal > 0){
             byte[] returnBuffer = new byte[nbVal];
@@ -69,10 +99,18 @@ public class ByteRingBuffer {
         }
     }
 
+    /**
+     *
+     * @return Nombre de variables contenues dans le buffer
+     */
     public int bytesToRead(){
         return nbVal;
     }
 
+    /**
+     * Description du contenu du ByteRingBuffer
+     * @return String
+     */
     public String toString(){
         String s = "ByteRingBuffer containing [";
         int readPtr = readIndex;
@@ -87,6 +125,11 @@ public class ByteRingBuffer {
         return s;
     }
 
+    /**
+     * Permet l'incrémentation des index de lecture/écriture
+     * @param index index à incrémenter
+     * @return index incrémenté
+     */
     private int incIndex(int index){
         int ind = index;
         if(index == totSize-1){
@@ -98,6 +141,11 @@ public class ByteRingBuffer {
         return ind;
     }
 
+    /**
+     * Permet la décrémentation des index de lecture/écriture
+     * @param index index à décrémenter
+     * @return index décrémenté
+     */
     private int decIndex(int index){
         int ind = index;
         if(index == 0){

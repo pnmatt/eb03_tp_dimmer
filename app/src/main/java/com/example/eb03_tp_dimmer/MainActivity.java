@@ -26,17 +26,29 @@ import static android.os.Build.VERSION.SDK_INT;
 
 public class MainActivity extends AppCompatActivity {
 
+    /**Constante de Result, pour l'activité de connexion bluetooth*/
     private final static int BT_CONNECT_CODE = 1;
+    /**Constante de Result, pour la vérification des permissions bluetooth*/
     private final static int PERMISSIONS_REQUEST_CODE = 0;
+    /**Constante de Result, pour    */
     private final static String[] BT_DANGEROUS_PERMISSIONS = new String[]{Manifest.permission.ACCESS_FINE_LOCATION};
+    /**Element graphique : statut de connexion*/
     private TextView mStatus;
-    private AppCompatSeekBar mSeekbar;
+    /**Reference vers singleton OscilloManager, pour transmettre les commandes vers l'oscilloscope*/
     private OscilloManager mOscilloManager;
+    /**Element graphique : Slider rond pour sélectionner la valeur de la Led*/
     private RoundSlider mRoundSlider;
+    /**Element graphique : bouton de reconnection. Permet la déconnexion/reconnexion au périphérique */
     private Button mConnectButton;
+    /**Listener pour le bouton de reconnection*/
     private View.OnClickListener mConnectButtonListener;
+    /**Element graphique : */
     private String mDeviceAddress;
 
+    /**
+     * Fonction d'initialisation de l'activité
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,40 +56,6 @@ public class MainActivity extends AppCompatActivity {
         mStatus = findViewById(R.id.status);
         verifyBtRights();
         mOscilloManager = OscilloManager.getInstance();
-        /*mSeekbar = findViewById(R.id.seekBar);
-        mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            private int nb_commands = 0;
-
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(mOscilloManager.getStatus() == Transceiver.STATE_CONNECTED){
-                    mOscilloManager.setCalibrationDutyCycle(progress);
-                }else if(mOscilloManager.getStatus() == Transceiver.STATE_CONNECTING){
-                    if(nb_commands%100 == 0){
-                        Toast.makeText(MainActivity.this,"L'application se connecte...",Toast.LENGTH_LONG).show();
-                        nb_commands = 0;
-                    }
-                    nb_commands ++;
-                }else if(mOscilloManager.getStatus() == Transceiver.STATE_NOT_CONNECTED){
-                    if(nb_commands%100 == 0){
-                        Toast.makeText(MainActivity.this,String.format("%d",nb_commands),Toast.LENGTH_LONG).show();
-                        nb_commands = 0;
-                    }
-                    //"L'application n'est pas connectée"
-                    nb_commands ++;
-                }
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });*/
         mRoundSlider = findViewById(R.id.roundslider);
         mRoundSlider.setRoundSliderListener(new RoundSlider.RoundSliderListener() {
             private int nb_commands = 0;
@@ -141,13 +119,23 @@ public class MainActivity extends AppCompatActivity {
         mConnectButton.setOnClickListener(mConnectButtonListener);
     }
 
+    /**
+     * Initialisation du contenu du menu
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu,menu);
         return true;
     }
 
-
+    /**
+     * Fonction de sélection du device bluetooth, appelle BTConnectActivity.
+     * @see BTConnectActivity
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int menuItem = item.getItemId();
@@ -160,8 +148,9 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
-
+    /**
+     *Fonction de vérification des droits bluetooth
+     */
     private void verifyBtRights(){
         if(BluetoothAdapter.getDefaultAdapter() == null){
             Toast.makeText(this,"Cette application nécessite un adaptateur BT",Toast.LENGTH_LONG).show();
@@ -177,6 +166,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Fonction appelée après la requête des permissions bluetooth
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if(requestCode == PERMISSIONS_REQUEST_CODE){
@@ -189,6 +184,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Traite le retour de l'activité de connexion bluetooth
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

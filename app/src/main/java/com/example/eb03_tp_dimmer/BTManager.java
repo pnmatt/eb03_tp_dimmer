@@ -9,17 +9,40 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
+/**
+ * Implementation de Transciever, permettant de gérer de la connexion Bluetooth
+ */
 public class BTManager extends Transceiver {
 
+    /**
+     * UUID du service voulu sur l'Oscilloscope
+     */
     private static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
+    /**
+     * Référence vers l'adaptateur Bluetooth de l'appareil
+     */
     private BluetoothAdapter mAdapter;
 
+    /**
+     * Socket de connexion avec le service du périphérique
+     */
     private BluetoothSocket mSocket = null;
 
+    /**
+     * Thread de connection vers le périphérique bluetooth
+     */
     private ConnectThread mConnectThread = null;
+
+    /**
+     * Thread d'écriture vers le périphérique bluetooth
+     */
     private WritingThread mWritingThread = null;
 
+    /**
+     * Initialisation des variables de connexion Bluetooth, et lancement du Thread de connexion.
+     * @param id
+     */
     @Override
     public void connect(String id) {
         disconnect();
@@ -31,7 +54,9 @@ public class BTManager extends Transceiver {
         mConnectThread.start();
     }
 
-
+    /**
+     * Déconnexion du périphérique : fermeture du Socket de connexion.
+     */
     @Override
     public void disconnect() {
         if((getState() == STATE_CONNECTED)||(getState() == STATE_CONNECTING)){
@@ -44,6 +69,10 @@ public class BTManager extends Transceiver {
     }
 
 
+    /**
+     * Envoi d'un message vers l'Oscilloscope.
+     * @param b
+     */
     @Override
     public void send(byte[] b) {
         byte[] new_frame;
@@ -56,7 +85,10 @@ public class BTManager extends Transceiver {
      */
     private class ConnectThread extends Thread{
 
-
+        /**
+         * Fonction de création de la classe (du Thread)
+         * @param device Périphérique auquel on veut se connecter
+         */
         public ConnectThread(BluetoothDevice device) {
             //BluetoothSocket socket = null;
 
@@ -67,6 +99,9 @@ public class BTManager extends Transceiver {
             }
         }
 
+        /**
+         * Fonction principale du Thread, connexion du Socket au device bluetooth
+         */
         @Override
         public void run() {
             mAdapter.cancelDiscovery();
@@ -82,7 +117,9 @@ public class BTManager extends Transceiver {
         }
     }
 
-
+    /**
+     * Instanciation du Thread d'écriture.
+     */
     private void startReadWriteThreads(){
         // instanciation d'un thread de lecture
 
@@ -99,6 +136,10 @@ public class BTManager extends Transceiver {
         private OutputStream mOutStream;
         public ByteRingBuffer mByteRingBuffer;
 
+        /**
+         * Creation de la classe (du Thread)
+         * @param mSocket Socket de conexion au device bluetooth
+         */
         public WritingThread(BluetoothSocket mSocket) {
             try {
                 mOutStream = mSocket.getOutputStream();
@@ -108,6 +149,9 @@ public class BTManager extends Transceiver {
             mByteRingBuffer = new ByteRingBuffer(4096);
         }
 
+        /**
+         * Envoi permanent du contenu du RingBuffer au périphérique bluetooth
+         */
         @Override
         public void run() {
             while(mSocket != null){

@@ -22,26 +22,41 @@ import androidx.appcompat.widget.Toolbar;
 
 import java.util.Set;
 
+  /**
+   * Classe de connexion au Bluetooth : permet la découverte et le choix du périphérique Bluetooth
+   */
   public class BTConnectActivity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener {
 
+    /**Constante de Result, pour la requête d'activation du bluetooth*/
     private static final int BT_ACTIVATION_REQUEST_CODE = 0;
+    /***/
     private static final int RN42_COD = 0x1F00;
+    /**Element graphique : Toolbar du dessus*/
     private Toolbar mToolbar;
+    /**Element graphique : bouton de scan*/
     private Button mScann;
+      /**Element graphique : liste des périphériques découverts pendant le scan*/
     private ListView mPairedList;
+      /**Element graphique : liste des périphériques déjà découverts*/
     private ListView mDiscoveredList;
+    /**Recepteur des périphériques découverts */
     private BroadcastReceiver mBroadcastReceiver;
 
+    /**Conteneur des Views de la ListView mPairedList*/
     private ArrayAdapter<String> mPairedAdapter;
+      /***/
     private ArrayAdapter<String> mDiscoveredAdapter;
+    /**Spinner graphique indiquant la découverte des périphériques en cours*/
     private ProgressBar mProgressBar;
+    /**Référence vers l'adaptateur Bluetooth de l'appareil */
     private BluetoothAdapter mBluetoothAdapter;
+    /**True si BroadcastReciever a été enregistré et peut reçevoir*/
     private boolean mBroadcastRegistered;
 
     private enum Action {START, STOP};
 
       /**
-       *
+       * Fonction d'initialisation de l'activité Bluetooth
        * @param savedInstanceState
        */
     @Override
@@ -105,6 +120,9 @@ import java.util.Set;
     }
 
 
+      /**
+       * Fonction appelée lors de la pause d'utilisation par l'utilisateur
+       */
     @Override
     protected void onPause() {
         super.onPause();
@@ -117,6 +135,13 @@ import java.util.Set;
         }*/
     }
 
+      /**
+       * Fonction appelée lors du clic sur le périphérique bluetooth. Initialise le processus de connection bluetooth, en quittant l'activité et en renvoyant l'addresse de connexion voulue au MainActivity
+       * @param adapterView
+       * @param view
+       * @param i
+       * @param l
+       */
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         Intent intent = new Intent();
@@ -143,11 +168,10 @@ import java.util.Set;
         finish();
     }
 
-    @Override
-    public void finish() throws Error {
-        super.finish();
-    }
-
+      /**
+       * Fonction appelée lors de l'appui sur 'connect'. Permet le départ de la découverte des appareils Bluetooth.
+       * @param view
+       */
     @Override
     public void onClick(View view) {
         switch (view.getId()){
@@ -166,7 +190,13 @@ import java.util.Set;
 
     }
 
-
+      /**
+       * Traite le retour de l'activité de vérification de l'activation du Bluetooth.
+       * @see #onClick
+       * @param requestCode
+       * @param resultCode
+       * @param data
+       */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -181,7 +211,10 @@ import java.util.Set;
         }
     }
 
-
+      /**
+       * Permet l'activation/désactivation du scan Bluetooth selon son état
+       * @see #btScan
+       */
     private void toggleBtScan(){
         if(mScann.getText().equals("Scanner")){
             btScan(Action.START);
@@ -195,6 +228,10 @@ import java.util.Set;
 
     }
 
+      /**
+       * Fonction d'initialisation/d'arrêt de la découverte de périphériques Bluetooth
+       * @param startstop Booleen, start = true, stop = false
+       */
     private void btScan(Action startstop){
         if(startstop == Action.START){
             IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);

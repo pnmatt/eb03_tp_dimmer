@@ -3,25 +3,37 @@ package com.example.eb03_tp_dimmer;
 import java.util.ArrayList;
 
 public class FrameProcessor {
+    /**Frame créée à partir d'un message*/
     public byte[] txFrame;
+    /**Data parsée d'une frame*/
     public byte[] rxData;
 
-    public static final byte SET_VERTICAL_SCALE = 0x02;
+    /*public static final byte SET_VERTICAL_SCALE = 0x02;
     public static final byte SET_VERTICAL_OFFSET = 0x03;
     public static final byte SET_HORIZONTAL_SCALE = 0x07;
     public static final byte SET_CHANNEL = 0x0B;
-    public static final byte SET_CALIBRATION_DUTY_CYCLE = 0x0A;
     public static final byte SET_TRIGGER_CHANNEL = 0x08;
     public static final byte SET_TRIGGER_TYPE = 0x09;
     public static final byte SET_TRIGGER_LEVEL = 0x0C;
-    public static final byte DATA_TRANSFERT = -113; //8F = -113, 8F pas accepté
+    public static final byte DATA_TRANSFERT = -113; //8F = -113, 8F pas accepté*/
+    /**Commande de calibration de la led*/
+    public static final byte SET_CALIBRATION_DUTY_CYCLE = 0x0A;
 
+    /**Byte de début de la frame*/
     public static final byte HEADER = 0x05;
+    /**Byte de fin de la frame*/
     public static final byte TAIL = 0x04;
+    /**Byte d'échappement*/
     public static final byte ESC = 0x06;
 
+    /**ArrayList temporaire de construction/parsage de la frame*/
     private ArrayList<Byte> temp_frame;
 
+    /**
+     * Fonction permettant le parsage d'une frame. Le message est mis dans rxData. !! Pas finie !!
+     * @param received_frame Frame reçue à parser
+     * @return true si la frame était valide et a été parsée
+     */
     public boolean fromFrame(byte[] received_frame){
         temp_frame = new ArrayList<Byte>();
         for(byte b : received_frame){
@@ -38,6 +50,12 @@ public class FrameProcessor {
         return true;
     }
 
+    /**
+     * Fonction permettant la construction d'une frame à partir d'un message et une commande spécifique
+     * @param command Commande à envoyer (voir constantes dans FrameProcessor)
+     * @param parameters Message à envoyer avec la commande
+     * @return Tableau de bytes contentant la frame construite
+     */
     public byte[] toFrame(byte command,byte[] parameters){
         temp_frame = new ArrayList<Byte>();
         temp_frame.add(HEADER);
@@ -59,6 +77,9 @@ public class FrameProcessor {
         return txFrame;
     }
 
+    /**
+     * Permet l'ajout des échappements dans la frame
+     */
     private void addEscTempFrame(){
         int i = 1;
         int frame_size = temp_frame.size();
@@ -81,6 +102,9 @@ public class FrameProcessor {
         }
     }
 
+    /**
+     * Permet la suppression des échappements dans une frame parsée
+     */
     private void removeEscTempFrame(){
         System.out.println("remove");
         System.out.println();
@@ -109,6 +133,10 @@ public class FrameProcessor {
         }
     }
 
+    /**
+     * Calcul du byte de contrôle dans la frame
+     * @return
+     */
     private byte calcCtrl(){
         int ctrl = 0;
         int frame_size = temp_frame.size();
